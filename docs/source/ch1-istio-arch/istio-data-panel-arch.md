@@ -1,30 +1,31 @@
-# Istio Data Plane Architecture
+# Istio 데이터 플레인 아키텍처
 
-If you want to understand the core mechanics of a system, you should first look at the main data flows of the system, and Istio is no exception. Below we look at the deployment architecture of the Istio data plane.
+어떤 시스템의 핵심 동작 원리를 이해하고자 한다면, 우선 그 시스템의 주요 데이터 흐름을 살펴봐야 한다. Istio도 예외는 아니다. 아래는 Istio 데이터 플레인의 배포 아키텍처를 나타낸 것이다.
 
 ```{note}
-A description of the lab environment for this section can be found at: {ref}`appendix-lab-env/appendix-lab-env-base:Simple layered lab environment`
+이 섹션에서 사용되는 실습 환경에 대한 설명은 다음에서 확인할 수 있다: {ref}`appendix-lab-env/appendix-lab-env-base:Simple layered lab environment`
 ```
 
-:::{figure-md} Figure: Istio Data Plane Architecture
+:::{figure-md} 그림: Istio 데이터 플레인 아키텍처
 
 <img src="istio-data-panel-arch.assets/istio-data-panel-arch.drawio.svg" alt="Inbound and Outbound concepts">
 
-*Figure: Istio Data Plane Architecture*
+*그림: Istio 데이터 플레인 아키텍처*
 :::
-*[Open with Draw.io](https://app.diagrams.net/?ui=sketch#Uhttps%3A%2F%2Fistio-insider.mygraphql.com%2Fzh_CN%2Flatest%2F_images%2Fistio-data-panel-arch.drawio.svg)*
+*[Draw.io로 열기](https://app.diagrams.net/?ui=sketch#Uhttps%3A%2F%2Fistio-insider.mygraphql.com%2Fzh_CN%2Flatest%2F_images%2Fistio-data-panel-arch.drawio.svg)*
 
-{ref}`Figure: Istio Data Plane Architecture` is the data-plane relationship diagram for the call chain: `client ➔ fortio-server:8080 ➔ fortio-server-l2:8080`. The numbers in the diagram are port numbers. 
-
+{ref}`Figure: Istio Data Plane Architecture`는 다음 호출 체인에 대한 데이터 플레인 관계도이다:  
+`client ➔ fortio-server:8080 ➔ fortio-server-l2:8080`.  
+다이어그램에 표시된 숫자는 포트 번호이다.
 
 ## netfilter/iptables
 
-{ref}`Figure: Istio Data Plane Architecture` The `kernel netfilter` in the diagram is some interception and forwarding rules for TCP connections, which can be inspected like this:
+{ref}`Figure: Istio Data Plane Architecture`에 있는 `kernel netfilter`는 TCP 연결에 대한 일부 인터셉션 및 포워딩 규칙을 의미하며, 다음과 같은 방식으로 확인할 수 있다:
 
 ```bash
-export WORKNODE=xzy # The worker node on which the POD of interest is running.
+export WORKNODE=xzy # 관심 있는 POD가 실행 중인 워커 노드
 ssh $WORKNODE
-export POD=fortio-server # name of POD of interest
+export POD=fortio-server # 확인하려는 POD 이름
 ENVOY_PIDS=$(pgrep envoy)
 while IFS= read -r ENVOY_PID; do
     if [ $(sudo nsenter -u -t $ENVOY_PID hostname)=="$POD" ]; then
@@ -35,7 +36,7 @@ done <<< "$ENVOY_PIDS"
 sudo nsenter -n -t $TARGET_ENVOY_PID iptables-save
 ```
 
-Output:
+출력 결과:
 
 ```
 *nat

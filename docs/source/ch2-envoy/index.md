@@ -1,9 +1,9 @@
-# Inside Envoy
+Envoy 내부 들여다보기
 
-To understand Istio in depth, it is important to understand the Envoy Proxy at the heart of the traffic, and there are three levels of understanding here:
-1. understanding the native programmable proxy `Envoy Proxy` architecture
-2. understand what Istio's `Istio Customized Envoy Proxy`: [github.com/istio/proxy](https://github.com/istio/proxy) does to extend it
-3. understand how istiod can programmatically control `Istio's customized Envoy Proxy` to implement Service Grid functionality
+Istio를 깊이 있게 이해하려면, 트래픽의 중심에 있는 Envoy Proxy를 이해하는 것이 중요하며, 이를 위한 이해 수준은 다음 세 가지로 나눌 수 있습니다:
+  1. 네이티브로 프로그래밍 가능한 프록시인 Envoy Proxy 아키텍처를 이해하기
+  2. Istio의 커스터마이즈된 Envoy Proxy (github.com/istio/proxy)가 Envoy를 어떻게 확장하는지를 이해하기
+  3. Istio의 커스터마이즈된 Envoy Proxy를 istiod가 어떻게 프로그래밍 방식으로 제어하여 서비스 메시 기능을 구현하는지를 이해하기
 
 ```{toctree}
 :caption: Catalog

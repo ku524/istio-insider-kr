@@ -1,35 +1,30 @@
-# Native Programmable Envoy
+# 네이티브 프로그래머블 앰보이 (Native Programmable Envoy)
 
-## A little history
+## 약간의 역사
 
-```{note}
-I'm not particularly fond of talking about the big picture, the big history, all that stuff that everyone knows all the time. But knowing a little bit of history can help us understand the causes of the current situation, and anticipate the consequences of the future.
-```
+나는 거대한 그림이나 역사 같은, 모두가 늘 알고 있는 얘기를 굳이 장황하게 말하는 걸 그리 좋아하진 않는다. 하지만 현재 상황의 원인을 이해하고 미래의 결과를 예측하려면, 약간의 역사 정도는 알고 있는 게 도움이 된다.
 
+Envoy는 Lyft에 재직 중인 Matt Klein에 의해 만들어졌다. 서비스 메시(Service Mesh)의 프록시로 설계되었으며, Envoy 초기에는 Matt Klein 본인이 Google의 Istio 개발팀과 아주 밀접하게 협업했다. Istio와 Envoy는 언제나 공생 관계였다고 할 수 있는데 (지금은 Istio가 Envoy 외의 다른 에이전트를 사용할 수 있게 되었지만), 그래서 많은 사람들이 둘을 구분하지 못하기도 한다.
 
-Envoy is created by Matt Klein, who works at Lyft. It was designed to be as a proxy in a Service Mesh. In the early days of Envoy, Matt Klein himself worked very closely with the development team at Google's Istio. It can be said that Istio and Envoy have always been symbiotic relationship (although now Istio can use other agents instead of Envoy). That's why many people can't tell the difference between them.
+### 왜 C++인가?
 
-### Why C++?
+“왜 Envoy를 C++로 구현했는가?” 이 질문은 Envoy에 입문한 사람들이 가장 많이 묻는 질문 중 하나다. Rust나 Go 같은 “안전한” 또는 “요즘 대세”인 언어가 인기인 시대에, 구식이고 학문적이며, 보안에 취약한 언어인 C++을 쓰는 건 뭔가 기피해야 할 일처럼 여겨진다.
 
-"Why implemented Envoy in C++?" This is probably one of the most popular questions asked by people who are new to Envoy. With the popularity of "safe"/"trendy" languages such as Rust/Go, there is a strong disincentive to use an old school, academic, insecure language.
+Matt Klein의 대답은, Envoy가 처음 시작할 당시에는 C++이 최선의 선택이었다는 것이다. 20년 전에는 체계적으로 C++을 사용했지만 그 이후 20년간은 자바 커피를 마셔온 나로서는, Envoy 코드를 훑어보며 C++11의 사용이 상당히 자바스럽다는 인상을 받았다. 코드가 명확하고 이해하기 쉬우며, 일부 고수들이 초보자 접근을 막기 위해 쓰는 난해한 마법 코드는 사용하지 않는다. 이런 점은 오픈소스 프로젝트의 성공에 꼭 필요한 요소다.
 
-Matt Klein's answer is that it was the best choice when Envoy started. As someone who used C++ more systematically 20 years ago, but has been drinking Java coffee for the last 20 years, I've skimmed through some of the Envoy code, and I think that the Envoy's use of C++11 is already very Java-like. The code is clear and easy to understand, unlike some masters, who write some magic code in an esoteric manner to discourage beginners. This is also a necessary quality for the success of open source projects.
+## Envoy Proxy L1 아키텍처
 
+L1은 가장 상위 수준의 아키텍처를 의미하며, OSI 모델의 네트워크 계층에서 말하는 L1과는 관계가 없다.
+Matt Klein의 설명부터 시작해보자:
 
-## Envoy Proxy L1 architecture
-
-`L1` is the highest level of architecture, and this is not the L1 of the OSI Model network hierarchy.  
-Let's start with Matt Klein:
-
-:::{figure-md} Envoy overall architecture
+:::{figure-md} Envoy 전체 아키텍처
 
 <img src="index.assets/envoy_arch_l1.png" alt="Envoy overall architecture">
 
-*Figure: Envoy overall architecture  From: Envoy original author Matt Klein, Lyft's [Envoy Internals Deep Dive - Matt Klein, Lyft (Advanced Skill Level)]*
+
+* 그림: Envoy 전체 아키텍처 — Envoy의 원 저자인 Lyft의 Matt Klein, 출처: [Envoy Internals Deep Dive - Matt Klein, Lyft (Advanced Skill Level)]
 :::
 
-This is an architectural diagram from several years ago, but it doesn't look like much has changed. I'm not going to describe this `Envoy Internals` architecture diagram here. I'd like to start with its surroundings.
+이 다이어그램은 몇 년 전의 것이지만, 지금까지도 큰 변화는 없어 보인다. 여기서는 Envoy Internals 아키텍처 다이어그램 자체를 설명하지는 않겠다. 그보다는 Envoy를 둘러싼 환경부터 시작하고자 한다.
 
-```{warning}
-Note that I do not intend to analyze the Istio control plane in complete isolation from the Envoy. That would be of limited relevance. If you talk about the Envoy in isolation from Istio, often times you won't understand why the Envoy is designed the way it is. But when we explain the design of the Envoy in the context of Istio's use of the Envoy, it becomes easier to understand why.
-```
+Istio의 컨트롤 플레인을 Envoy와 완전히 분리해서 분석하려는 건 아니다. 그런 분석은 큰 의미가 없기 때문이다. Envoy를 Istio와 무관하게 이야기하면, 종종 왜 Envoy가 그런 식으로 설계되었는지 이해하기 어렵다. 하지만 Istio가 Envoy를 어떻게 사용하는지를 고려하면서 Envoy의 설계를 설명하면, 왜 그렇게 만들어졌는지를 이해하기가 훨씬 쉬워진다.

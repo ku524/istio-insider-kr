@@ -1,69 +1,64 @@
-## Book overview
+## 책 개요
 
-### What this book is not
+### 이 책이 아닌 것
 
-This book is not a manual. Not from the user's point of view, teaching how to learn Istio in simple terms. It won't preach how powerful Istio is, let alone teach how to use Istio. There are already too many excellent books, articles, and documents on the Internet.
+이 책은 매뉴얼이 아닙니다. 사용자의 관점에서 이스티오(Istio)를 쉽게 배우는 방법을 알려주는 입문서도 아닙니다. 이스티오가 얼마나 강력한지 설파하거나, 이스티오를 어떻게 사용하는지 가르치지도 않습니다. 이미 인터넷에는 훌륭한 책, 글, 문서들이 넘쳐납니다.
 
-> 🤷 : [Yet, another](https://en.wikipedia.org/wiki/Yet_another) Istio User Guide?
-> 🙅 : No!
-
-
-### What is this book
-
-In this book, I try to think systematically as much as possible from the perspective of design and implementation:
-- Why is Istio the way it is?
-- The truth behind those magic configs: Linux + Envoy
-- What Istio might look like in the future
+> 🤷 : [또 다른](https://en.wikipedia.org/wiki/Yet_another) Istio 사용자 가이드?
+> 🙅 : 아닙니다!
 
 
-What the book says is just my thinking and recording after researching and using Istio for a period of time. I'm not an expert, much less an Istio Committer. Not even the employees of big Internet companies. I just checked some Istio/Envoy related functions and performance issues, browsed and debugged some Istio/Envoy codes.
+### 이 책이 말하고자 하는 것
 
-In the process of researching Istio. There is a lot of valuable information on the Internet. However, either it is mainly based on the user, and the implementation mechanism is not mentioned; or the mechanism is said, and it is well said, but the content is less systematic and coherent.
+이 책에서는 가능한 한 체계적으로 설계 및 구현의 관점에서 생각하려고 합니다:
+- Istio는 왜 이런 구조를 갖게 되었는가?
+- 마법 같은 설정의 진실: 리눅스 + Envoy
+- 미래의 Istio는 어떤 모습일까?
 
-### Reader object
-This book mainly talks about the design and implementation mechanism of Istio/Envoy. It is assumed that the reader already has some experience with Istio.
+이 책의 내용은 제가 일정 기간 Istio를 연구하고 사용하면서 정리한 생각과 기록일 뿐입니다. 저는 전문가도 아니고, Istio 커미터도 아닙니다. 대형 IT 기업의 직원도 아닙니다. 단지 Istio/Envoy 관련 기능과 성능 문제를 조금 살펴보고, Istio/Envoy 코드를 브라우징하고 디버깅한 경험이 있을 뿐입니다.
 
-### Book access address
+Istio를 연구하는 과정에서, 인터넷에는 많은 가치 있는 정보들이 존재합니다. 하지만 대부분 사용자 중심으로 구성되어 있어서 내부 구현 메커니즘에 대한 언급이 없거나, 혹은 메커니즘을 잘 설명하고는 있지만 내용이 체계적이고 일관되지는 않습니다.
+
+### 독자 대상
+이 책은 주로 Istio/Envoy의 설계 및 구현 메커니즘을 다룹니다. 독자가 이미 어느 정도 Istio에 대한 경험이 있다고 가정합니다.
+
+### 책 접근 주소
 - [https://istio-insider.mygraphql.com](https://istio-insider.mygraphql.com)
 - [https://istio-insider.readthedocs.io](https://istio-insider.readthedocs.io)
 - [https://istio-insider.rtfd.io](https://istio-insider.rtfd.io)
 
+### 저자 소개
+제 이름은 Mark Zhu입니다. 머리숱이 적은 중년 프로그래머입니다.
 
-### About the author
-My name is Mark Zhu, a middle-aged programmer with little hair.
+블로그: [https://blog.mygraphql.com/](https://blog.mygraphql.com/)
 
-Blog: [https://blog.mygraphql.com/](https://blog.mygraphql.com/)
+### 중요: 스타일, 스타일, 이 책의 인터랙티브한 읽기 📖
 
+#### 인터랙티브한 책
 
-### Important: style, style, interactive reading of this article 📖
+사실 글을 쓰는 시간보다 그림을 그리는 시간이 더 많았습니다. 따라서 이 책은 컴퓨터로 그림을 보면서 읽는 것이 정석입니다. 모바일은 트래픽을 소모시키기 위한 음모일 뿐입니다.
+여기에 포함된 대부분의 다이어그램은 복잡한 구조로 되어 있어서, PPT에서 보는 큰 파이 차트와는 다릅니다. 그래서 종이책으로 인쇄해서 보는 데는 적합하지 않습니다. 하지만 그림과 독자가 상호작용할 수 있도록 했습니다:
 
-#### Interactive Books
+- 대부분의 원본 그림은 Draw.io로 만든 SVG 이미지입니다: `*.drawio.svg`.
 
-It can be said that most of my writing time is not spent writing, but drawing. Therefore, using a computer to read the pictures is the correct way to open this book. Mobile phones are just a conspiracy to drain traffic.
-Most of the diagrams here are more complex, not PPT big pie charts. Therefore, it is basically not suitable for printing out paper books. But I'll let the graph interact with the reader:
+복잡한 다이어그램의 경우, `draw.io로 열기`를 추천합니다:
+- 일부 이미지는 브라우저에서 더 인터랙티브하게 볼 수 있도록 `draw.io로 열기` 링크를 제공합니다:
+  - 밑줄 친 텍스트가 있는 곳은 관련 문서나 코드 라인으로 연결됩니다.
+  - 마우스를 올려놓으면 `hover` 창이 팝업되어, 설정 파일 내용 등의 추가 정보를 보여줍니다.
 
-- Original drawings, mostly SVG images made with Draw.io: `*.drawio.svg`.
+Draw.io를 선호하지 않는다면 SVG만 봐도 충분합니다:
+- SVG 이미지를 볼 때는 브라우저에서 이미지를 오른쪽 클릭해서 `새 탭에서 이미지 열기`를 선택하는 것이 올바른 방법입니다. 큰 SVG 이미지는 휠 클릭으로 자유롭게 스크롤/드래그 가능합니다.
+- SVG 이미지 안의 링크를 클릭하면 해당 소스 페이지(또는 관련 문서)로 바로 이동할 수 있으며, 때로는 코드 라인까지 정확하게 연결됩니다.
 
-For complex diagrams, it is recommended to `open with draw.io`:
-- Some images provide a `Open with draw.io` link, which can be viewed in a more interactive way in the browser:
-  - Where there is (underlined text), links to related documentation and lines of code.
-  - Put the mouse on it and a `hover` window will pop up, prompting more information. Such as configuration file content.
+#### 문체 스타일
+이 글은 인쇄 출판을 목적으로 작성된 것이 아닙니다. 또한 공식 문서도 아닙니다. 따라서 문체는 구어체입니다. 아주 진지한 글을 기대한다면 실망할 수도 있습니다. 하지만 진지하지 않다고 해서 불성실한 것은 아닙니다.
 
-If you don't like draw.io then just look at SVG:
-- The correct posture to browse SVG images is to right-click on the image in the browser and select `Open Image in New Tab`. Large SVG image, middle mouse button pressed, free scroll/drag.
-- SVG images can click the link to directly jump to the corresponding source page (or related documents), sometimes accurate to the source line.
+### 집필 참여
+이 책을 함께 쓰고 싶으신 분이 있다면, 저에게 연락 주세요. 이 책은 이력서를 꾸미기 위한 출발점도 아니고, 그럴 능력도 없습니다. 게다가 이처럼 `짧고 빠른`, `TL;DR` 스타일이 아닌 책은 원래부터 소수만 읽는 운명입니다.
 
-#### language style
-As this article is not intended for print publication. Nor is it official documentation. So language-wise I am colloquial. If the reader's expectation is to read a very serious book, they may be disappointed. But not serious does not mean not rigorous.
+### 헌사 💞
+먼저, 행복하고 생산적인 삶이 무엇인지 보여주신 사랑하는 부모님께.
+그리고 사랑하는 아내와 놀라운 우리 아이에게 – 모든 사랑과 인내에 감사드립니다.
 
-### Involved in the preparation
-If you are also interested in writing this book, please contact me. The starting point of this book is not to brush a resume, nor does it have this ability. Moreover, such non-`short and fast` and `TL;DR` books are destined to be a niche product.
-
-
-### Dedication 💞
-First, to my dear parents, for showing me how to live a happy
-and productive life. To my dear wife and our amazing kid – thanks for all your love and patience.
-
-
-### Copyleft Statement
-Whether it is text or pictures, if reproduced or modified, please indicate the original source.
+### 카피레프트 안내
+텍스트든 그림이든, 재배포하거나 수정할 경우 반드시 원 출처를 밝혀주시기 바랍니다.

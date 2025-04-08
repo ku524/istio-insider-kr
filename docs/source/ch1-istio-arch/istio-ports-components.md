@@ -1,49 +1,42 @@
-# Istio Ports and Components
+# Istio 포트 및 구성 요소
 
-Each component of Istio listens to a bunch of ports. For beginners, it can be difficult to figure out what each port does. Here, the {ref}`Figure: Istio Ports and Components` illustrates the ports and related functionality of each component when Istio is deployed by default.
+Istio의 각 구성 요소는 여러 포트를 리슨(listen)하고 있다. 입문자들에게는 각 포트가 어떤 역할을 하는지 파악하는 것이 쉽지 않을 수 있다. 아래의 {ref}`Figure: Istio Ports and Components`는 Istio를 기본 설정으로 배포했을 때 각 구성 요소가 사용하는 포트와 관련된 기능을 도식화한 것이다.
 
-
-:::{figure-md} Figure: Istio Ports and Components
+:::{figure-md} 그림: Istio 포트 및 구성 요소
 :class: full-width
 
 <img src="istio-ports-components.assets/istio-ports-components.drawio.svg" alt="Istio ports and components">
 
-*Figure: Istio Ports and Components*  
+*그림: Istio 포트 및 구성 요소*  
 :::
-*[Open with Draw.io](https://app.diagrams.net/?ui=sketch#Uhttps%3A%2F%2Fistio-insider.mygraphql.com%2Fzh_CN%2Flatest%2F_images%2Fistio-ports-components.drawio.svg)*
+*[Draw.io로 열기](https://app.diagrams.net/?ui=sketch#Uhttps%3A%2F%2Fistio-insider.mygraphql.com%2Fzh_CN%2Flatest%2F_images%2Fistio-ports-components.drawio.svg)*
 
-The above image needs to be clarified:
-- The istio-proxy container shares the same Linux `network namespace` as other containers in the same pod. 
-- A `network namespace` is a technique used within the kernel to isolate multiple different network configurations. One of these configurations is `netfilter`, often referred to as `iptables`, which we'll talk about later.
+위 그림에 대해 몇 가지 설명이 필요하다:
 
-## Listening on ports
+- `istio-proxy` 컨테이너는 같은 Pod 내 다른 컨테이너들과 동일한 Linux `network namespace`를 공유한다.
+- `network namespace`는 커널 내부에서 서로 다른 네트워크 설정을 분리하는 기술이다. 이 설정 중 하나가 바로 `netfilter`이며, 흔히 `iptables`로도 불린다. 이에 대해서는 뒤에서 더 설명할 것이다.
 
-You can see which ports you are listening on in the following way:
+## 포트 리스닝 확인
+
+다음과 같은 방식으로 어떤 포트를 리스닝 중인지 확인할 수 있다:
 
 ```bash
 
 $ nsenter -n -t $PID_OF_ENVOY
 $ ss -ln
 
-u_str    LISTEN     etc/istio/proxy/SDS 34782                        * 0            users:(("pilot-agent",pid=3406,fd=13))                                             
-u_str    LISTEN     etc/istio/proxy/XDS 34783                        * 0            users:(("pilot-agent",pid=3406,fd=16))                                             
-u_str    ESTAB      etc/istio/proxy/XDS 1379729                      * 1379728      users:(("pilot-agent",pid=3406,fd=8))                                              
-u_str    ESTAB                        * 1379728                      * 1379729      users:(("envoy",pid=3555,fd=37))                                                   
-u_str    ESTAB      etc/istio/proxy/SDS 45274                        * 46319        users:(("pilot-agent",pid=3406,fd=15))                                             
-u_str    ESTAB                        * 46319                        * 45274        users:(("envoy",pid=3555,fd=19))                                                   
-tcp      LISTEN                 0.0.0.0:15021                  0.0.0.0:*            users:(("envoy",pid=3555,fd=40),("envoy",pid=3555,fd=34),("envoy",pid=3555,fd=22)) 
-tcp      LISTEN                 0.0.0.0:15090                  0.0.0.0:*            users:(("envoy",pid=3555,fd=39),("envoy",pid=3555,fd=33),("envoy",pid=3555,fd=21)) 
-tcp      LISTEN               127.0.0.1:15000                  0.0.0.0:*            users:(("envoy",pid=3555,fd=18))                                                   
-tcp      LISTEN                 0.0.0.0:15001                  0.0.0.0:*            users:(("envoy",pid=3555,fd=41),("envoy",pid=3555,fd=35),("envoy",pid=3555,fd=31)) 
-tcp      LISTEN               127.0.0.1:15004                  0.0.0.0:*            users:(("pilot-agent",pid=3406,fd=17))                                             
-tcp      LISTEN                 0.0.0.0:15006                  0.0.0.0:*            users:(("envoy",pid=3555,fd=42),("envoy",pid=3555,fd=36),("envoy",pid=3555,fd=32)) 
-tcp      ESTAB           172.21.206.227:40560            10.108.217.90:15012        users:(("pilot-agent",pid=3406,fd=19))                                             
-tcp      ESTAB           172.21.206.227:43240            10.108.217.90:15012        users:(("pilot-agent",pid=3406,fd=14))                                             
-tcp      LISTEN                       *:15020                        *:*            users:(("pilot-agent",pid=3406,fd=12))                                             
-tcp      ESTAB                127.0.0.1:35256                127.0.0.1:15020        users:(("envoy",pid=3555,fd=43))                                                   
-tcp      ESTAB                127.0.0.1:35238                127.0.0.1:15020        users:(("envoy",pid=3555,fd=20))                                                   
-tcp      ESTAB       [::ffff:127.0.0.1]:15020       [::ffff:127.0.0.1]:35238        users:(("pilot-agent",pid=3406,fd=6))                                              
-tcp      ESTAB       [::ffff:127.0.0.1]:15020       [::ffff:127.0.0.1]:35256        users:(("pilot-agent",pid=3406,fd=18))                                             
+u_str    LISTEN     etc/istio/proxy/SDS ...
+u_str    LISTEN     etc/istio/proxy/XDS ...
+...
+tcp      LISTEN     0.0.0.0:15021 ...
+tcp      LISTEN     0.0.0.0:15090 ...
+tcp      LISTEN     127.0.0.1:15000 ...
+tcp      LISTEN     0.0.0.0:15001 ...
+tcp      LISTEN     127.0.0.1:15004 ...
+tcp      LISTEN     0.0.0.0:15006 ...
+...
+tcp      LISTEN     *:15020 ...
+...
 ```
 
 ## iptables
@@ -53,61 +46,50 @@ $ iptables-save
 
 # Generated by iptables-save v1.8.7 on Fri Dec 16 16:18:31 2022
 *nat
-:PREROUTING ACCEPT [104490:5433496]
-:INPUT ACCEPT [105123:5471476]
-:OUTPUT ACCEPT [24745:1633905]
-:POSTROUTING ACCEPT [42627:2706825]
+:PREROUTING ACCEPT [...]
 :ISTIO_INBOUND - [0:0]
 :ISTIO_IN_REDIRECT - [0:0]
 :ISTIO_OUTPUT - [0:0]
 :ISTIO_REDIRECT - [0:0]
 -A PREROUTING -p tcp -j ISTIO_INBOUND
 -A OUTPUT -p tcp -j ISTIO_OUTPUT
--A ISTIO_INBOUND -p tcp -m tcp --dport 15008 -j RETURN
--A ISTIO_INBOUND -p tcp -m tcp --dport 15090 -j RETURN
--A ISTIO_INBOUND -p tcp -m tcp --dport 15021 -j RETURN
--A ISTIO_INBOUND -p tcp -m tcp --dport 15020 -j RETURN
+-A ISTIO_INBOUND -p tcp --dport 15008 -j RETURN
+-A ISTIO_INBOUND -p tcp --dport 15090 -j RETURN
+-A ISTIO_INBOUND -p tcp --dport 15021 -j RETURN
+-A ISTIO_INBOUND -p tcp --dport 15020 -j RETURN
 -A ISTIO_INBOUND -p tcp -j ISTIO_IN_REDIRECT
 -A ISTIO_IN_REDIRECT -p tcp -j REDIRECT --to-ports 15006
 -A ISTIO_OUTPUT -s 127.0.0.6/32 -o lo -j RETURN
 -A ISTIO_OUTPUT ! -d 127.0.0.1/32 -o lo -m owner --uid-owner 201507 -j ISTIO_IN_REDIRECT
--A ISTIO_OUTPUT -o lo -m owner ! --uid-owner 201507 -j RETURN
--A ISTIO_OUTPUT -m owner --uid-owner 201507 -j RETURN
--A ISTIO_OUTPUT ! -d 127.0.0.1/32 -o lo -m owner --gid-owner 201507 -j ISTIO_IN_REDIRECT
--A ISTIO_OUTPUT -o lo -m owner ! --gid-owner 201507 -j RETURN
--A ISTIO_OUTPUT -m owner --gid-owner 201507 -j RETURN
--A ISTIO_OUTPUT -d 127.0.0.1/32 -j RETURN
--A ISTIO_OUTPUT -j ISTIO_REDIRECT
+...
 -A ISTIO_REDIRECT -p tcp -j REDIRECT --to-ports 15001
 COMMIT
 ```
 
-## Connections
-{ref}`Figure: Istio Ports and Components` contains some descriptions of the TCP connections inside a  pod running in Istio (see the `ss` command output therein). I will not go through them one by one.
+## 연결
 
+{ref}`Figure: Istio Ports and Components`는 Istio 환경의 Pod 내 TCP 연결 상태를 일부 보여준다 (`ss` 명령어 출력 참고). 이 부분은 일일이 설명하지는 않겠다.
 
-## Miscellaneous Ops guide
+## 기타 운영 가이드
 
-### Packet captures
+### 패킷 캡처
 
-#### Sidecar packet capture
+#### 사이드카 패킷 캡처
 
-{ref}`Figure: Istio Ports and Components` contains some instructions for running `tcpdumps` in Istio. I won't repeat them here. One thing to highlight is the `tcpdump` capture point. This point affects the filtering conditions and output of `tcpdump`. It is importance to know if the capture point is before or after redirect rule of iptables.
+{ref}`Figure: Istio Ports and Components`에는 Istio 환경에서 `tcpdump`를 사용하는 방법에 대한 설명이 일부 포함되어 있다. 여기서 다시 설명하지는 않겠지만, `tcpdump`의 캡처 지점(capture point)은 중요하다. 캡처 지점이 `iptables` 리다이렉트 규칙 전인지 후인지에 따라 필터 조건과 결과가 달라지기 때문이다.
 
-> tcpdump capture pinpoint:
+> `tcpdump` 캡처 지점 요약:
 >
-> tcpdump will see inbound traffic before iptables, but will see
-> outbound traffic only after the firewall has processed it.
+> - Inbound: `tcpdump`는 `iptables`보다 먼저 트래픽을 본다.
+> - Outbound: `tcpdump`는 `iptables` 처리 이후에 트래픽을 본다.
 >
-> As a matter of fact, tcpdump is the first software found after the wire (and the NIC, if you will) on the way IN, and the last one on the way OUT.
+> 즉, `tcpdump`는 IN 방향에서는 NIC 바로 뒤, OUT 방향에서는 NIC 바로 앞에 위치한다.
 >
-> * Wire -> NIC -> tcpdump -> netfilter/iptables
-> * iptables -> tcpdump -> NIC -> Wire
-
-
+> * IN: Wire → NIC → tcpdump → netfilter/iptables  
+> * OUT: iptables → tcpdump → NIC → Wire
 
 ```bash
-######## sidecar ########
+######## 사이드카 ########
 
 sudo nsenter -t $PID_OF_SIDECAR_ENVOY -n -u
 
@@ -116,68 +98,52 @@ export LOCAL_IP=$(ip addr show lo | grep "inet\b" | awk '{print $2}' | cut -d/ -
 
 # inbound mTLS
 sudo tcpdump -i eth0 -n -vvvv  "(dst port 8080 and dst $ETH0_IP) or (src port 8080 and src $ETH0_IP)"
-# inbound plain text
+# inbound 평문
 sudo tcpdump -i lo -n -vvvv -A "(dst port 8080 and dst $ETH0_IP) or (src port 8080 and src $ETH0_IP)"
 
-# outbound plain text
+# outbound 평문
 sudo tcpdump -i lo -n -vvvv -A  "((dst port 15001 and dst 127.0.0.1) or (dst portrange 20000-65535 and dst $ETH0_IP))"
 # outbound mTLS
 sudo tcpdump -i eth0 -n -vvvv -A  "((src portrange 20000-65535 and src $ETH0_IP) or (dst portrange 20000-65535 and dst $ETH0_IP))"
 ```
 
+문제는 `outbound 평문` 패킷의 경우, 리다이렉션 이후의 127.0.0.1이 캡처되므로 Wireshark와 같은 도구로 분석할 때 TCP 스트림을 따라가기 어렵다는 점이다.
 
+#### Istio Gateway 패킷 캡처
 
-One problem is that `outbound plaintext` packet capture, outbound IP packet captures 127.0.0.1 after redirect, inbound IP packet captures the ip address before redirect. If you analyze these packets with tools like Wireshark, you will not be able to Follow TCP Stream.
+일반적으로 Istio Gateway의 업스트림(클러스터 내부)과 다운스트림(클러스터 외부)은 서로 다른 서브넷에 있기 때문에, CIDR로 이를 구분할 수 있다.
 
-
-
-#### Istio Gateway packet capture
-
-Generally, Istio Gateway's upstream (inside the Cluster) and downstream (outside the Cluster) will be in different subnet, so you can use CIDR to distinguish them.
-
-
-
-First, let's look at the CIDR range of a pod in a Kubernetes cluster:
+먼저 Kubernetes 클러스터 내의 Pod가 속한 CIDR을 확인해보자:
 
 ```bash
 ps -ef | grep cidr
 root      48587  20177  0 Dec08 ?        00:21:25 kube-controller-manager ... --cluster-cidr=192.168.0.0/12 ...--service-cluster-ip-range=10.96.0.0/12 ...
 ```
 
-
-
-Then, attempting to use the above parameter directly will result in an error:
+하지만 위에서 얻은 CIDR을 그대로 `tcpdump`에 사용하면 오류가 발생한다:
 
 ```bash
-$ sudo tcpdump -i br0 -vvvv -A  net 192.168.0.0/12  #168 here
+$ sudo tcpdump -i br0 -vvvv -A  net 192.168.0.0/12  # 168 사용
 tcpdump: non-network bits set in "192.168.0.0/12"
 ```
 
-
-
-I found that tcpdump is quite strict on the format of cidr, requiring the first available ip address segment. Using [https://cidr.xyz/](https://cidr.xyz/), we analyzed the first available ip address of `192.168.0.0/12` to be `192.160.0.1`, so:
+이유는 `tcpdump`가 CIDR 포맷에 매우 엄격하기 때문이다. 첫 번째 사용 가능한 IP 세그먼트를 요구한다. [https://cidr.xyz/](https://cidr.xyz/)를 사용해 분석해보면, `192.168.0.0/12`의 첫 사용 가능한 IP는 `192.160.0.1`이다. 따라서 아래와 같이 사용해야 한다:
 
 ```bash
-$ sudo tcpdump -i br0 -vvvv -A  net 192.160.0.0/12  #160(NOT 168) here
+$ sudo tcpdump -i br0 -vvvv -A  net 192.160.0.0/12  # 160 (168 아님)
 ```
 
+### 기적의 127.0.0.6
 
-### Miraculous 127.0.0.6
+여러 이유로 인해, Inbound 트래픽이 Envoy에서 앱으로 전달될 때 Envoy가 바인딩하는 TCP 연결의 IP 주소는 `ip addr` 명령어로는 보이지 않는 `127.0.0.6`이다. 궁금하다면 아래 문서를 참고하라:
 
-For very many reasons, the ip address that Envoy binds the TCP connection it establishes when inbound traffic goes from Envoy to app is one that `ip addr` command can't even find: `127.0.0.6` on the `lo` interface. If you're curious, see:
-
-> Why the bind magic `127.0.0.6` ?
+> 왜 바인딩 주소가 `127.0.0.6`인가?
 >
 > * [Document the 127.0.0.6 magic #29603](https://github.com/istio/istio/issues/29603)
 > * [Inbound Forwarding](https://docs.google.com/document/d/1j-5_XpeMTnT9mV_8dbSOeU7rfH-5YNtN_JJFZ2mmQ_w/edit#heading=h.xw1gqgyqs5b)
 > * [Understanding the Sidecar Injection, Traffic Intercepting & Routing Process in Istio](https://jimmysong.io/en/blog/sidecar-injection-iptables-and-traffic-routing/)
 > * [Upcoming networking changes in Istio 1.10](https://istio.io/latest/blog/2021/upcoming-networking-changes/)
 
+## 맺음말
 
-
-## Ending words
-
-It is very unintuitive and easy to solve network problems under the complex implementation of Istio with the traditional Linux network operation and maintenance approach. While Service Mesh is being applied, observability tools and methods should be changed accordingly. Otherwise, after large-scale use, problem solving will cost quite a lot.
-
-
-
+Istio처럼 복잡한 구조를 가진 시스템에서는 전통적인 Linux 네트워크 운영 방식으로 문제를 직관적으로 해결하기가 매우 어렵다. Service Mesh를 도입했다면, 그에 맞는 가시성(observability) 도구와 분석 방법도 함께 변화해야 한다. 그렇지 않으면, 대규모로 운영될수록 문제 해결에 드는 비용이 기하급수적으로 커질 수 있다.

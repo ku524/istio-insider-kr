@@ -1,43 +1,39 @@
-# Interactive Book
+# 인터랙티브 북
 
-## How to read interactively
+## 인터랙티브하게 읽는 법
 
-Humanity has evolved to the point where I think it's time for books to expand their definition. As technical knowledge becomes more complex, interactive, electronic presentations may be better suited for in-depth learning of complex technical knowledge. When getting started, one prefers abstraction and simplification, and when going deeper, one prefers to make sense of internal connections.
+인류는 이제 책의 정의를 확장할 시점까지 발전해 왔다고 생각합니다. 기술 지식이 점점 복잡해짐에 따라, 이러한 복잡한 기술 지식을 깊이 있게 학습하기 위해서는 인터랙티브하고 전자적인 표현 방식이 더 적합할 수 있습니다. 학습을 시작할 때는 추상화와 단순화를 선호하고, 더 깊이 들어갈수록 내부 연결 구조를 이해하고자 하는 경향이 있습니다.
 
-This is not a "deep dive into xyz source code" type of book. I can even say that I did my best not to post the source code directly in the book. Looking at the source code is a necessary step to grasp the details of the implementation, but navigating through the source code in a book is generally a very poor experience. Instead, a navigation chart of the source code is probably more helpful.
+이 책은 ‘xyz 소스 코드를 깊이 파헤친다’는 식의 책이 아닙니다. 오히려 소스 코드를 책 안에 직접적으로 넣지 않기 위해 노력했다고 말할 수 있습니다. 소스 코드를 보는 것은 구현 세부사항을 파악하기 위해 반드시 필요한 과정이지만, 책 안에서 소스 코드를 따라가는 경험은 일반적으로 매우 나쁩니다. 그보다는 소스 코드의 네비게이션 차트를 제공하는 것이 훨씬 유익할 수 있습니다.
 
-I spend most of my writing time not on words, but on diagrams. So using a PC to read the diagrams is the right way to open the book.
-Most of the diagrams here are complex, not like PPT charts. So, basically, they are not suitable for printing out a paper book either. But I will let the diagrams interactive with the reader:
+저는 글을 쓰는 데 대부분의 시간을 단어가 아니라 다이어그램에 썼습니다. 따라서 PC로 다이어그램을 보면서 책을 읽는 것이 올바른 접근 방식입니다.
+이 책에 수록된 다이어그램들은 일반적인 PPT 도표처럼 단순하지 않고 꽤 복잡합니다. 그래서 종이책으로 출력해서 보는 것도 적합하지 않습니다. 대신, 이 다이어그램들을 독자와 상호작용할 수 있도록 구성했습니다.
+  - 대부분의 원본 다이어그램은 Draw.io로 제작된 SVG 이미지(*.drawio.svg)입니다.
 
-- For original diagrams, most are SVG images made with Draw.io: `*.drawio.svg`.
+복잡한 다이어그램의 경우 draw.io로 열기를 추천합니다:
+  - 일부 도표에는 브라우저에서 더 인터랙티브하게 볼 수 있도록 draw.io로 열기 링크가 포함되어 있습니다: *.drawio.svg
+  - 밑줄 친 텍스트나 🔗 아이콘은 관련 문서나 소스 코드의 특정 라인으로 연결됩니다.
+  - 💡 또는 🛈 아이콘 위에 마우스를 올리면, 구성 파일의 내용 등 추가 정보를 보여주는 hover 창이 뜹니다.
 
-For complex diagrams, it is recommended to `open with draw.io`:
-- Some figure provide links to `open with draw.io` for a more interactive browser view: `*.drawio.svg`.
-  - <u>underlined text</u> or 🔗 icon on diagrams, links to related documentation and lines of code.
-  - 💡 or 🛈 icon on diagrams, When your mouse over, a `hover` window pops up with more information. For example, the contents of a configuration file.
+Draw.io를 선호하지 않는다면 SVG 파일을 브라우저로 여세요.
+  - SVG 이미지를 제대로 보는 방법은 브라우저에서 이미지에 오른쪽 클릭 후 새 탭에서 이미지 열기를 선택하는 것입니다. 이미지가 큰 경우, 휠 버튼을 눌러 자유롭게 스크롤하거나 드래그할 수 있습니다.
+  - SVG 이미지는 링크를 클릭하여 해당 소스 코드 페이지나 관련 문서로 직접 이동할 수 있습니다.
+  - SVG에는 레이아웃 문제나, 이미지 안에 삽입된 스니펫으로 인해 draw.io에서만 제대로 열리는 경우가 있습니다.
 
-If you don't like draw.io, then open the SVG file by your browser.
-- The proper way to view an SVG image is to right-click on the image in your browser and select `Open Image in New Tab`. For large SVG images, press the middle mouse button and scroll/drag freely.
-- SVG images can be clicked on a link to go directly to the corresponding source code page (or related documentation)
-- SVGs sometimes have layout problems, especially with embedded snippets in the image, which can only be opened with drawio.
-
-```{hint}
- - For big diagram is recommended to opened with Draw.io The diagram contains a lot of links to the documentation for each component, configuration item, and metric. Sometimes it links to the source code on github.
- - Dual monitors, one for the diagram and one for text on the book, is the recommended reading environment. If you're reading this book on your phone, then, ignore me 🤦
+```힌트
+ - 큰 다이어그램은 Draw.io로 여는 것이 좋습니다. 다이어그램에는 각 구성 요소, 설정 항목, 메트릭 등에 대한 문서 링크가 풍부하게 포함되어 있고, 때로는 Github의 소스 코드로도 연결됩니다.
+ - 다이어그램용 모니터 하나, 책의 텍스트용 모니터 하나. 듀얼 모니터로 읽는 것을 추천합니다. 만약 이 책을 휴대폰으로 보고 있다면, 그냥 이 말은 무시해주세요 🤦
 ```
 
-## Language style
-As this article is not intended for print publication. Nor is it an official document of any kind. So language wise I am colloquial. If the reader's expectation is to read a very serious book, they may be disappointed. But not being serious doesn't mean it's not rigorous.  
-Because this is the first book I've written, I don't have much experience. I didn't have anyone to proofread and errata with, so if there are any mistakes, readers can create a Github Issue.
+## 문체
 
+이 글은 인쇄 출판을 목적으로 한 것도 아니고, 어떤 공식 문서도 아닙니다. 그래서 문체는 비교적 구어체입니다. 매우 진지한 책을 기대하는 독자라면 실망할 수도 있겠습니다. 하지만 진지하지 않다고 해서 엄밀하지 않다는 뜻은 아닙니다.
+이 책은 제가 처음으로 쓰는 책이기에 경험이 부족합니다. 교정자도 없었고, 정오표도 없습니다. 오류가 있다면 독자들이 Github Issue를 만들어주시면 감사하겠습니다.
 
-## Drawing styles
+## 다이어그램 스타일
 
-Diagrams used in the software engineering industry, such as architecture diagrams, flowcharts, and so on, can be categorized into two styles:
-- Limit the complexity of each diagram, high level abstract. This style is more often seen in PPT and normal books.
-- Engineer's diagrams, everything in detail, are abstracted only when the complexity is beyond the maximum that a person can understand in a plane.
+소프트웨어 엔지니어링 업계에서 사용하는 아키텍처 다이어그램, 플로우차트 등은 크게 두 가지 스타일로 나눌 수 있습니다:
+  - 각 다이어그램의 복잡성을 제한하고 추상화 수준이 높은 스타일. PPT나 일반적인 책에서 자주 볼 수 있습니다.
+  - 모든 디테일을 담아낸, 필요할 때만 추상화하는 엔지니어 스타일. 평면 상에서 사람이 이해할 수 있는 복잡도의 한계를 넘는 경우에만 추상화합니다.
 
-This book uses both styles of diagrams. However, the latter is more commonly used.
-
-
-
+이 책은 두 가지 스타일의 다이어그램을 모두 사용합니다. 하지만 후자의 스타일을 더 자주 사용합니다.
